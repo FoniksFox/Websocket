@@ -57,6 +57,32 @@ def validate_frame(frame: Frame, sender_role: Role | None = None) -> None:
     if not frame.fin and frame.opcode in (Opcode.TEXT, Opcode.BINARY):
         logger.debug("Fragmentation not supported in MVP")
         raise ProtocolError("Fragmentation not supported")
+    if frame.opcode == Opcode.TEXT:
+        try:
+            frame.payload.decode("utf-8")
+        except UnicodeDecodeError:
+            logger.debug("Text frames must be valid UTF-8")
+            raise ProtocolError("Text frames must be valid UTF-8")
+    if frame.opcode == Opcode.CLOSE:
+        if len(frame.payload) != 0 and len(frame.payload) < 2:
+            logger.debug("Close frame payload too short")
+            raise ProtocolError("Close frames must have a payload of at least 2 bytes, or no payload")
+        if len(frame.payload) > 125:
+            logger.debug("Close frame payload too large")
+            raise ProtocolError("Close frames must not have a payload larger than 125 bytes")
+        if len(frame.payload) >= 2:
+            code = int.from_bytes(frame.payload[:2], byteorder='big')
+            if not (1000 <= code <= 4999):
+                logger.debug("Invalid close code: %d", code)
+                raise ProtocolError("Invalid close code")
+            if code in (1004, 1005, 1006, 1015):
+                logger.debug("Reserved close code: %d", code)
+                raise ProtocolError("Reserved close code")
+            try:
+                frame.payload[2:].decode('utf-8')
+            except UnicodeDecodeError:
+                logger.debug("Invalid close reason format: %s", frame.payload[2:])
+                raise ProtocolError("Invalid close reason format")
 
     # Optional masking enforcement based on who sent the frame
     if sender_role is not None:
