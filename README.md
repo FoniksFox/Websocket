@@ -80,15 +80,16 @@ Websocket/
 │   ├── server/
 │   │   ├── server.py              # Entry point; event loop + selector
 │   │   ├── handshake.py           # HTTP upgrade and headers
-│   │   ├── protocol.py            # Frame encode/decode, masking, opcodes
 │   │   ├── connection.py          # Per-connection state machine
-│   │   ├── hub.py                 # Broadcast/rooms routing (MVP: global)
-│   │   └── types.py               # Dataclasses, enums, type aliases
+│   │   └── hub.py                 # Broadcast/rooms routing (MVP: global)
 │   ├── client/
 │   │   ├── client.py              # Minimal stdlib Python client
 │   │   └── browser/
 │   │       └── index.html         # Simple page using native WebSocket
 │   └── utils/
+│       ├── types.py               # Dataclasses, enums, type aliases
+│       ├── protocol.py            # Frame encode/decode, masking, opcodes
+│       ├── validate.py            # Validates websocket frames based on the protocol
 │       └── logging.py             # Consistent logging config
 ├── tests/
 │   ├── test_protocol.py           # Unit tests for frame parsing
@@ -158,11 +159,14 @@ This project demonstrates:
 
 ## Design Decisions
 
-*Will host sections explaining all the decisions made in the process and why were they made*
+### Utils
+
+Actually used as a directory to put all shared code between client and server logic. May change that in the future with a proper "shared" directory if it becomes too chaotic, but there are not that many modules right now, so there's no need yet.
 
 ## Notes and Reflections
 
-*This section will be updated throughout the development process with insights, challenges, and solutions discovered during implementation.*
+**August 16, 2025 - Protocol Setup**
+Started by adding the types considered necessary for the project. Implemented the handshake logic and then the frame validation and protocol functions so that later development will be easier. Made the types, validate and protocol modules shared for both client and server to avoid code duplication.
 
 ## Resources
 
