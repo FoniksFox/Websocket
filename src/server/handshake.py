@@ -1,7 +1,7 @@
 """Module for handling WebSocket handshakes"""
 
 from __future__ import annotations
-from .types import UpgradeRequest, UpgradeResponse, HandshakeResult, HandshakeError
+from ..utils.types import UpgradeRequest, UpgradeResponse, HandshakeResult, HandshakeError
 from ..utils.logging import get_logger
 from hashlib import sha1
 import base64
