@@ -99,3 +99,13 @@ class MaskingError(ProtocolError):
 
 # Other aliases
 BytesLike: TypeAlias = bytes | bytearray | memoryview
+
+
+# === Connection ===
+
+class ConnectionState(Enum):
+    NEW = "NEW"
+    HANDSHAKING = "HANDSHAKING"
+    OPEN = "OPEN"
+    CLOSING = "CLOSING"
+    CLOSED = "CLOSED"
