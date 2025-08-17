@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebSocket Demo</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      #log { border: 1px solid #ccc; padding: .5rem; height: 200px; overflow: auto; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>WebSocket Demo</h1>
+    <p>Status: <span id="status">disconnected</span></p>
+    <div>
+      <input id="msg" placeholder="Type a message" />
+      <button id="send">Send</button>
+      <button id="ping">Ping</button>
+    </div>
+    <h3>Log</h3>
+    <div id="log"></div>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const logEl = document.getElementById("log");
+      const msgEl = document.getElementById("msg");
+      const sendBtn = document.getElementById("send");
+      const pingBtn = document.getElementById("ping");
+
+      const ws = new WebSocket("ws://127.0.0.1:8765");
+      function log(line) {
+        logEl.textContent += line + "\n";
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+      ws.addEventListener("open", () => { statusEl.textContent = "open"; log("open"); });
+      ws.addEventListener("message", (ev) => { log("recv: " + ev.data); });
+      ws.addEventListener("close", () => { statusEl.textContent = "closed"; log("close"); });
+      ws.addEventListener("error", (e) => { log("error"); console.error(e); });
+
+      sendBtn.onclick = () => { const m = msgEl.value || "hello"; ws.send(m); log("send: " + m); };
+      pingBtn.onclick = () => { try { ws.send(""); log("ping (sent empty text)"); } catch (e) {} };
+    </script>
+  </body>
+</html>
