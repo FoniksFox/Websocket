@@ -203,17 +203,17 @@ def decode_frames(buffer: bytes | bytearray | memoryview, sender_role: Role) -> 
 
 
 # Convenience builders (enforce control-frame rules)
-def make_ping(payload: bytes = b"") -> bytes:
+def make_ping(role: Role, payload: bytes = b"") -> bytes:
     """Create a Ping frame (opcode 0x9)."""
-    return encode_frame(Role.SERVER, Opcode.PING, payload, fin=True, masking_key=None)
+    return encode_frame(role, Opcode.PING, payload, fin=True, masking_key=None)
 
 
-def make_pong(payload: bytes = b"") -> bytes:
+def make_pong(role: Role, payload: bytes = b"") -> bytes:
     """Create a Pong frame (opcode 0xA)."""
-    return encode_frame(Role.SERVER, Opcode.PONG, payload, fin=True, masking_key=None)
+    return encode_frame(role, Opcode.PONG, payload, fin=True, masking_key=None)
 
 
-def make_close(code: int = 1000, reason: str = "") -> bytes:
+def make_close(role: Role, code: int = 1000, reason: str = "") -> bytes:
     """
     Create a Close frame (opcode 0x8).
 
@@ -225,7 +225,7 @@ def make_close(code: int = 1000, reason: str = "") -> bytes:
         The encoded Close frame as bytes.
     """
     payload = code.to_bytes(2, byteorder='big') + reason.encode('utf-8')
-    return encode_frame(Role.SERVER, Opcode.CLOSE, payload, fin=True, masking_key=None)
+    return encode_frame(role, Opcode.CLOSE, payload, fin=True, masking_key=None)
 
 
 def apply_mask(payload: bytes, masking_key: MaskingKey) -> bytes:
