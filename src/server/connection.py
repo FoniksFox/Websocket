@@ -120,6 +120,7 @@ class WebSocketConnection:
         """
         Non-blocking writer: send queued bytes; call when socket is writable.
         """
+        self.logger.debug(f"Flushing writes: {self.write_queue}")
         while self.write_queue:
             buf = self.write_queue[0]
             try:
@@ -227,6 +228,7 @@ class WebSocketConnection:
         Process incoming WebSocket frames.
         """
         sender_role = Role.CLIENT
+        self.logger.debug(f"Processing incoming frames: {self.read_buffer}")
         try:
             frames, remainder = decode_frames(self.read_buffer, sender_role)
         except MessageTooBigError:
